@@ -2,29 +2,35 @@ import sys,os,socket
 import tqdm
 import re
 import numpy as np
-threshold = 10
-SIZE = 512
+threshold = 5
+SIZE = 12
 n = 10
+template = [0,0]
 def authenticate(fresh_bio, id):
+
 	count = 0;
 	b = template[id]
+	print('len fresh ', len(fresh_bio))
+	if  len(fresh_bio) < SIZE:
+		print(fresh_bio)
+	print('len b     ', len(b))
+
 	for i in range(len(b)):
 		if b[i] != fresh_bio[i]:
 			count += 1
-
+	print('count', count)
 	if count < threshold:
-		return 0
-	else:
 		return 1
+	else:
+		return 0
 
 
-def generate_template:
+def generate_template():
 	
-	template[0] = np.random.choice([0, 1], size=(SIZE))
-	
+	template[0] = np.random.choice(['0', '1'], size=(SIZE))
+	print("TEMPLATE: ", template[0])
 
-BUFFER_SIZE = 512
-
+generate_template()
 
 server_host = 'localhost'
 server_port = 6688
@@ -33,23 +39,23 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((server_host, server_port))
 s.listen(socket.SOMAXCONN)
-print(f"[*] Listening as {server_host}:{server_port}")
 
 while 1:
 	(client_socket, address) = s.accept()
-	print(f"[+] {address} is connected.")
-	client_socket.sendall(b'Bienvenu\n')
 	pid = os.fork()
 	if (pid) :
 		while 1:
-			print("Hello\n")
-			received = client_socket.recv(BUFFER_SIZE).decode()
-			print(received)
+			
+			received = client_socket.recv(SIZE).decode()
+			print('\nclient :>', received)
+			response = authenticate(received, 0)
+			print('\nserver response:>', response)
+			client_socket.sendall(bytes(str(response),encoding='UTF-8'))
 	else:
 		while 1:
-			chat = input('client :>')
+			chat = input('server :>')
 			if not chat: break
-			client_socket.sendall(bytes(chat+'\n',encoding='UTF-8'))
+	# 		client_socket.sendall(bytes(chat+'\n',encoding='UTF-8'))
 
 	client_socket.close()
 		# while 1:
