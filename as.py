@@ -1,7 +1,7 @@
 import sys,os,socket
-import tqdm
 import re
 import numpy as np
+
 threshold = 5
 SIZE = 12
 n = 10
@@ -50,7 +50,10 @@ s.listen(socket.SOMAXCONN)
 while 1:
 	received = client_socket.recv(SIZE).decode()
 	print('\nclient :>', received)
+	if not received:
+		break
 	response = authenticate(received, 0)
+
 	print('\nserver response:>', res[response])
 	client_socket.sendall(bytes(str(response),encoding='UTF-8'))
 	# else:
