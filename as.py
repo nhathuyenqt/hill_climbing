@@ -43,24 +43,23 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((server_host, server_port))
 s.listen(socket.SOMAXCONN)
 
+# while 1:
+(client_socket, address) = s.accept()
+# pid = os.fork()
+# if (pid) :
 while 1:
-	(client_socket, address) = s.accept()
-	# pid = os.fork()
-	# if (pid) :
-	while 1:
-		
-		received = client_socket.recv(SIZE).decode()
-		print('\nclient :>', received)
-		response = authenticate(received, 0)
-		print('\nserver response:>', res[response])
-		client_socket.sendall(bytes(str(response),encoding='UTF-8'))
+	received = client_socket.recv(SIZE).decode()
+	print('\nclient :>', received)
+	response = authenticate(received, 0)
+	print('\nserver response:>', res[response])
+	client_socket.sendall(bytes(str(response),encoding='UTF-8'))
 	# else:
 	# 	while 1:
 	# 		chat = input('server :>')
 			# if not chat: break
 	# 		client_socket.sendall(bytes(chat+'\n',encoding='UTF-8'))
 
-	client_socket.close()
+client_socket.close()
 		# while 1:
 		# 	line = new_connection.recv(1000)
 		# 	print ("<:", str(line,encoding='UTF-8'))

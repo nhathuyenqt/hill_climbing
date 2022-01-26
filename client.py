@@ -7,8 +7,6 @@ def enc(st):
 	return st
 
 
-
-
 b_ = '1'*M
 
 
@@ -58,31 +56,34 @@ while 1:
 			# s.close()
 			# break
 	print('_______end for________ k = ', k)
-	# t = input('pause :>')
+	# # t = input('pause :>')
 	z = k
-	bi = bi[:z] + '1' + bi[z+1:]	#bi[z] = '1'
-	if z >= 1:
-		for k in range(1, z-1):
-			lamda = c[:k] + enc('0') + c[k+1:z+1] + enc('0')*(M-z)
-			print('send lamda2 ', lamda)
-			s.sendall(bytes(lamda, encoding='UTF-8'))
-			result = s.recv(1).decode()
-			if result == ACCEPTED:
-				print('ACCEPTED')
-				bi = bi[:k] + '1' + bi[k+1:]	#bi[k] = '1'
-			else:
-				print('REJECTED')
-		print('_______end for2________')
+	# bi = bi[:z] + '1' + bi[z+1:]	#bi[z] = '1'
+	# if z >= 1:
+	# 	for k in range(1, z-1):
+	# 		lamda = c[:k] + enc('0') + c[k+1:z+1] + enc('0')*(M-z)
+	# 		print('send lamda2 ', lamda)
+	# 		s.sendall(bytes(lamda, encoding='UTF-8'))
+	# 		result = s.recv(1).decode()
+	# 		if result == ACCEPTED:
+	# 			print('ACCEPTED')
+	# 			bi = bi[:k] + '1' + bi[k+1:]	#bi[k] = '1'
+	# 		else:
+	# 			print('REJECTED')
+	# 	print('_______end for2________')
 
 	for k in range(z+1, M):
+		print(k)
 		lamda = c[:z]
 		for j in range(z, k):
 			lamda = lamda + enc('0')
 		lamda = lamda + c[k]
 		for j in range(M-k):
 			lamda = lamda + enc('0')
+		
+		lamda = '0010000000000'
 		print('send lamda3 ', lamda)
-		s.sendall(bytes(lamda, encoding='UTF-8'))
+		s.send(bytes(lamda, encoding='UTF-8'))
 		
 		result = s.recv(1).decode()
 		if result == REJECTED:
