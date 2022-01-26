@@ -6,6 +6,7 @@ threshold = 5
 SIZE = 12
 n = 10
 template = [0,0]
+res = ['False', 'True']
 def authenticate(fresh_bio, id):
 
 	count = 0;
@@ -29,6 +30,8 @@ def generate_template():
 	
 	template[0] = np.random.choice(['0', '1'], size=(SIZE))
 	print("TEMPLATE: ", template[0])
+	 # ['0' '1' '0' '0' '0' '0' '0' '1' '0' '0' '0' '0']
+	# template[0] = ['1' '1' '1' '0' '1' '0' '1' '0' '0' '0' '1' '0']
 
 generate_template()
 
@@ -42,19 +45,19 @@ s.listen(socket.SOMAXCONN)
 
 while 1:
 	(client_socket, address) = s.accept()
-	pid = os.fork()
-	if (pid) :
-		while 1:
-			
-			received = client_socket.recv(SIZE).decode()
-			print('\nclient :>', received)
-			response = authenticate(received, 0)
-			print('\nserver response:>', response)
-			client_socket.sendall(bytes(str(response),encoding='UTF-8'))
-	else:
-		while 1:
-			chat = input('server :>')
-			if not chat: break
+	# pid = os.fork()
+	# if (pid) :
+	while 1:
+		
+		received = client_socket.recv(SIZE).decode()
+		print('\nclient :>', received)
+		response = authenticate(received, 0)
+		print('\nserver response:>', res[response])
+		client_socket.sendall(bytes(str(response),encoding='UTF-8'))
+	# else:
+	# 	while 1:
+	# 		chat = input('server :>')
+			# if not chat: break
 	# 		client_socket.sendall(bytes(chat+'\n',encoding='UTF-8'))
 
 	client_socket.close()

@@ -25,7 +25,7 @@ try:
 except:
 	print ("problem of connection")
 	sys.exit(1)
-pid = os.fork()
+# pid = os.fork()
 
 # if (pid):
 
@@ -39,35 +39,40 @@ c = enc(b_)
 while 1:
 	bi = '0'*M
 	for k in range(M):
+		print('check k ', k)
 		lamda = c[:k]
+
 		for j in range(M-k):
 			lamda = lamda + enc('0')
-		print('lamda ', lamda)
+		print('send lamda ', lamda)
 		s.sendall(bytes(lamda,encoding='UTF-8'))
 		
 		result = s.recv(1).decode()
-		print("  -> ", result)
 		if result == REJECTED:
 			print("REJECTED")
 			break
+		else:
+			print('ACCEPTED')
 		if k == M-1:
 			print(" run CENTER SEARCH ATTACK")
 			# s.close()
 			# break
-	print('________________ k = ', k)
-	t = input('pause :>')
+	print('_______end for________ k = ', k)
+	# t = input('pause :>')
 	z = k
 	bi = bi[:z] + '1' + bi[z+1:]	#bi[z] = '1'
 	if z >= 1:
 		for k in range(1, z-1):
-			lamda = c[z-1]
-			for j in range(M-k):
-				lamda = lamda + enc('0')
-			print('lamda2 ', lamda)
+			lamda = c[:k] + enc('0') + c[k+1:z+1] + enc('0')*(M-z)
+			print('send lamda2 ', lamda)
 			s.sendall(bytes(lamda, encoding='UTF-8'))
 			result = s.recv(1).decode()
 			if result == ACCEPTED:
+				print('ACCEPTED')
 				bi = bi[:k] + '1' + bi[k+1:]	#bi[k] = '1'
+			else:
+				print('REJECTED')
+		print('_______end for2________')
 
 	for k in range(z+1, M):
 		lamda = c[:z]
@@ -76,10 +81,15 @@ while 1:
 		lamda = lamda + c[k]
 		for j in range(M-k):
 			lamda = lamda + enc('0')
-		print('lamda3 ', lamda)
-		s.sendall(bytes(lamda,encoding='UTF-8'))
+		print('send lamda3 ', lamda)
+		s.sendall(bytes(lamda, encoding='UTF-8'))
 		
 		result = s.recv(1).decode()
 		if result == REJECTED:
 			bi = bi[:k] + '1' + bi[k+1:]	#bi[k] = '1'
+			print("REJECTED")
+		else:
+			print('ACCEPTED')
+	print('--check while--')
+	break
 s.close()
