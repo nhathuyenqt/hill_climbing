@@ -2,23 +2,27 @@ import sys,os,socket
 import re
 import numpy as np
 
-threshold = 5
-SIZE = 12
+threshold = 3
+SIZE = 10
 n = 10
-template = [0,0]
+template = ['','']
 res = ['False', 'True']
 def authenticate(fresh_bio, id):
 
 	count = 0;
 	b = template[id]
+	print(template)
+	print(b)
+	print(fresh_bio)
 	print('len fresh ', len(fresh_bio))
 	if  len(fresh_bio) < SIZE:
 		print(fresh_bio)
 	print('len b     ', len(b))
 
-	for i in range(len(b)):
+	for i in range(n):
 		if b[i] != fresh_bio[i]:
-			count += 1
+
+			count = count + 1
 	print('count', count)
 	if count < threshold:
 		return 1
@@ -27,11 +31,14 @@ def authenticate(fresh_bio, id):
 
 
 def generate_template():
-	
+	global template
 	template[0] = np.random.choice(['0', '1'], size=(SIZE))
-	print("TEMPLATE: ", template[0])
-	 # ['0' '1' '0' '0' '0' '0' '0' '1' '0' '0' '0' '0']
+	# template[0] = '0001000010'
+	# test = ['1' '0' '1' '0' '1' '0' '0' '1' '1' '0']
+	# template[0] = "".join(test)
+	# it = "".join(template[0])
 	# template[0] = ['1' '1' '1' '0' '1' '0' '1' '0' '0' '0' '1' '0']
+	print("TEMPLATE: ", ''.join(template[0]))
 
 generate_template()
 
