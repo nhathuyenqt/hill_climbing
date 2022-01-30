@@ -1,25 +1,37 @@
 import os,socket,sys
 import tqdm
+import pickle
+from GM import * 
 M = 10
-N = M
+
 res = ['False', 'True']
 REJECTED = '0'
 ACCEPTED = '1'
-def enc(st):
-	return st
+key = {'pub': (1255268899298437, 227546358779650), 'priv': (19535381, 64256177)}
 
+def enc(st):
+	print('st ', st, ' ', len(st))
+	
+	encr = []
+	for i in st:
+		d = encrypt(i, key['pub'])[0]
+		encr.append(d)
+	print(encr)
+	return encr
+	
 
 b_ = '1'*M
 
-BUFFER_SIZE = 512 
+BUFFER_SIZE = 1024
 
 host = 'localhost'
 port = 6688
 
+
 if __name__ == "__main__":
 
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
-
+	s.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, BUFFER_SIZE)
 
 	try:
 		print(f"[+] Connecting to {host}:{port}")
@@ -38,7 +50,12 @@ if __name__ == "__main__":
 		# 		break
 	# else:
 	# cipher = '010000010000'
-	cipher = '0111001000'
+	f = open('cipher.txt', 'r+')
+	
+	cipher = [line.rstrip('\n') for line in f.readlines()]
+	cipher = [int(line) for line in cipher]
+	print('cipher ',cipher)
+	f.close()
 
 	def inverse(Y):
 		inverseY = ''
@@ -52,7 +69,7 @@ if __name__ == "__main__":
 	def center_search_attack(B):
 		inverseB = inverse(B)
 		D = ''
-		for i in range(N):
+		for i in range(M):
 			D = inverseB[:i+1] + B[i+1:]
 			ct = enc(D)
 			s.sendall(bytes(ct ,encoding='UTF-8'))
@@ -61,8 +78,8 @@ if __name__ == "__main__":
 			print('ct ', ct)
 			if result == REJECTED:
 				break
-		A = ['' for i in range(N)]
-		for i in range(N):
+		A = ['' for i in range(M)]
+		for i in range(M):
 			ct = D[:i] + inverse(D[i]) + D[i+1:]
 			s.sendall(bytes(ct ,encoding='UTF-8'))
 			result = s.recv(1).decode()
@@ -77,15 +94,21 @@ if __name__ == "__main__":
 	def hill_climbing_attack(c):
 		
 		while 1:
-			trial = ['0'for i in range(M)]
+			trial = ['0' for i in range(M)]
 			for k in range(M-1, -1, -1):
-				print('check k ', k)
 				lamda = c[:k+1]
+
 				for j in range(M-k-1):
-					lamda = lamda + enc('0')
+					zero = enc('0')[0]
+					print('zero ', zero)
+					lamda.append(zero)
+					
 				print('send lamda ', lamda)
-				s.sendall(bytes(lamda,encoding='UTF-8'))
-				
+				data = str(lamda)
+				# lamda = [str(dt) for dt in lamda]
+				# data=pickle.dumps(lamda)
+				# print(sys.getsizeof(data))
+				s.sendall(bytes(data, encoding='UTF-8'))
 				result = s.recv(1).decode()
 				if result == REJECTED:
 					print("REJECTED")
@@ -111,7 +134,7 @@ if __name__ == "__main__":
 					lamda = lamda + enc('0') + c[k+1:z+1] + enc('0')*(M-z-1)
 
 					print('send lamda2 ', lamda)
-					s.sendall(bytes(lamda, encoding='UTF-8'))
+					s.sendall(bytes(lamda, encoding='UTF-8'), BUFFER_SIZE)
 					result = s.recv(1).decode()
 					if result == REJECTED:
 						trial[k] = '1'
@@ -143,5 +166,8 @@ if __name__ == "__main__":
 			break
 		print('Recovered bi ', trial)
 		s.close()
+
+
+
 
 	hill_climbing_attack(cipher)
