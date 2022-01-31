@@ -130,11 +130,16 @@ if __name__ == "__main__":
 				for k in range(z):
 					print('k = ', k)
 					lamda = c[:k]
-					
-					lamda = lamda + enc('0') + c[k+1:z+1] + enc('0')*(M-z-1)
-
+					zero = enc('0')[0]
+					lamda.append(zero)
+					for j in range(k+1,z+1):
+						lamda.append(c[j])
+					for j in range(M-z-1):
+						# zero = enc('0')[0]
+						lamda.append(zero)
 					print('send lamda2 ', lamda)
-					s.sendall(bytes(lamda, encoding='UTF-8'), BUFFER_SIZE)
+					data = str(lamda)
+					s.sendall(bytes(data, encoding='UTF-8'))
 					result = s.recv(1).decode()
 					if result == REJECTED:
 						trial[k] = '1'
@@ -144,17 +149,21 @@ if __name__ == "__main__":
 
 				print('_______end for2________')
 			print("trial ", trial,  "   z = ", z)
+			zero = enc('0')[0]
 			for k in range(z+1, M):
 				print('\nk = ', k)
 				lamda = c[:z]
-				
 				print('lam ', lamda)
-				
-				lamda = lamda + enc('0')*(k-z) +c[k]+enc('0')*(M-k-1)
+				for j in range(k-z):
+					lamda.append(zero)
+				lamda.append(c[k])
+				for j in range(M-k-1):
+					lamda.append(zero)
 				
 				# lamda = '001000000000'
 				print('send lamda3 ', lamda)
-				s.send(bytes(lamda, encoding='UTF-8'))
+				data = str(lamda)
+				s.send(bytes(data, encoding='UTF-8'))
 				
 				result = s.recv(1).decode()
 				if result == ACCEPTED:

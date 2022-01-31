@@ -7,6 +7,7 @@ threshold = 3
 SIZE = 1024
 M = 10
 template = ['','']
+raw_template = ''
 res = ['False', 'True']
 key = {'pub': (1255268899298437, 227546358779650), 'priv': (19535381, 64256177)}
 
@@ -55,14 +56,14 @@ def authenticate(fresh_bio, id):
 		return 0
 
 def generate_template():
-	global template
-	template[0] = np.random.choice(['0', '1'], size=M)
+	global template, raw_template
+	raw_template = np.random.choice(['0', '1'], size=M)
 	# template[0] = '0001000010'
-	template[0] = ['1' '0' '1' '0' '1' '0' '0' '1' '1' '0']
+	# raw_template = ['1' '0' '1' '0' '1' '0' '0' '1' '1' '0']
 	# template[0] = "".join(test)
 	# it = "".join(template[0])
 	# template[0] = ['1' '1' '1' '0' '1' '0' '1' '0' '0' '0' '1' '0']
-	temp = ''.join(template[0])
+	temp = ''.join(raw_template)
 	encrypted_temp = []
 	for i in range(M):
 		c_i = enc(temp[i])[0]
@@ -111,7 +112,7 @@ while 1:
 	# 		chat = input('server :>')
 			# if not chat: break
 	# 		client_socket.sendall(bytes(chat+'\n',encoding='UTF-8'))
-
+print("Raw value template ", raw_template)
 client_socket.close()
 		# while 1:
 		# 	line = new_connection.recv(1000)
