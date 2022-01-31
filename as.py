@@ -59,7 +59,7 @@ def generate_template():
 	global template, raw_template
 	raw_template = np.random.choice(['0', '1'], size=M)
 	# template[0] = '0001000010'
-	# raw_template = ['1' '0' '1' '0' '1' '0' '0' '1' '1' '0']
+	# raw_template = ['1' '0' '1' '0' '0' '0' '0' '0' '0' '0']
 	# template[0] = "".join(test)
 	# it = "".join(template[0])
 	# template[0] = ['1' '1' '1' '0' '1' '0' '1' '0' '0' '0' '1' '0']

@@ -9,9 +9,7 @@ REJECTED = '0'
 ACCEPTED = '1'
 key = {'pub': (1255268899298437, 227546358779650), 'priv': (19535381, 64256177)}
 
-def enc(st):
-	print('st ', st, ' ', len(st))
-	
+def enc(st):	
 	encr = []
 	for i in st:
 		d = encrypt(i, key['pub'])[0]
@@ -72,23 +70,28 @@ if __name__ == "__main__":
 		for i in range(M):
 			D = inverseB[:i+1] + B[i+1:]
 			ct = enc(D)
-			s.sendall(bytes(ct ,encoding='UTF-8'))
+			# print("cipher ", ct)
+			data = str(ct)
+			s.sendall(bytes(data ,encoding='UTF-8'))
 			result = s.recv(1).decode()
 			
-			print('ct ', ct)
+			# print('ct ', ct)
 			if result == REJECTED:
 				break
 		A = ['' for i in range(M)]
 		for i in range(M):
 			ct = D[:i] + inverse(D[i]) + D[i+1:]
-			s.sendall(bytes(ct ,encoding='UTF-8'))
+			ct = enc(ct)
+			# print("cipher2 ", ct)
+			data = str(ct)
+			s.sendall(bytes(data ,encoding='UTF-8'))
 			result = s.recv(1).decode()
-			print('i ', i, ' res ' , res[int(result)])
+			# print('i ', i, ' res ' , res[int(result)])
 			if result == REJECTED:
 				A[i] = D[i]
 			else:
 				A[i] = inverse(D[i])
-		print(A)
+		print("Recovered result", A)
 
 
 	def hill_climbing_attack(c):
