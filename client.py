@@ -2,7 +2,7 @@ import os,socket,sys
 import tqdm
 import pickle
 from GM import * 
-M = 10
+M = 100
 
 res = ['False', 'True']
 REJECTED = '0'
